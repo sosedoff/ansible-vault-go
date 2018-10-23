@@ -20,14 +20,17 @@ import(
 )
 
 func main() {
-  // Define vault password
-  pass := "secret"
-  
-  // Read existing secret
-  str, err := vault.DecryptFile("path/to/secret/file", pass)
+  // Encrypt secret data
+  str, err := vault.Encrypt("secret", "password")
 
-  // Decrypt from string
-  str, err := vault.Decrypt("secret data", pass)
+  // Decrypt secret data
+  str, err := vault.Decrypt("secret", "password")
+
+  // Write secret data to file
+  err := vault.EncryptFile("path/to/secret/file", "secret", "password")
+
+  // Read existing secret
+  str, err := vault.DecryptFile("path/to/secret/file", "password")
 }
 ```
 

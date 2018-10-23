@@ -31,6 +31,15 @@ func Encrypt(input string, password string) (string, error) {
 	return encodeSecret(&secret{data: data, salt: salt, hmac: hashSum}, key)
 }
 
+// EncryptFile encrypts the input string and saves it into the file
+func EncryptFile(path string, input string, password string) error {
+	result, err := Encrypt(input, password)
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(path, []byte(result), 0666)
+}
+
 // Decrypt decrypts the input string with the vault password
 func Decrypt(input string, password string) (string, error) {
 	lines := strings.Split(input, "\n")
