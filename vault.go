@@ -8,13 +8,6 @@ import (
 	"strings"
 )
 
-const (
-	keyLength  = 32
-	saltLength = 32
-	ivLength   = 16
-	operations = 10000
-)
-
 // Encrypt encrypts the input string with the vault password
 func Encrypt(input string, password string) (string, error) {
 	salt, err := generateRandomBytes(saltLength)

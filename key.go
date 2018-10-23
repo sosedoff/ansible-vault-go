@@ -7,6 +7,13 @@ import (
 	"golang.org/x/crypto/pbkdf2"
 )
 
+const (
+	keyLength  = 32
+	saltLength = 32
+	ivLength   = 16
+	operations = 10000
+)
+
 type key struct {
 	cipherKey []byte
 	hmacKey   []byte
