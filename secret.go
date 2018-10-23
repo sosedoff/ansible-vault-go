@@ -63,7 +63,7 @@ func checkDigest(secret *secret, key *key) error {
 	hash := hmac.New(sha256.New, key.hmacKey)
 	hash.Write(secret.data)
 	if !hmac.Equal(hash.Sum(nil), secret.hmac) {
-		return errors.New("password is invalid")
+		return errors.New("invalid password")
 	}
 	return nil
 }
