@@ -34,6 +34,12 @@ func main() {
 }
 ```
 
+## Doc
+
+Check out the Ansible documentation regarding the Vault file format:
+
+- https://docs.ansible.com/ansible/2.4/vault.html#vault-format
+
 ## License
 
 MIT
