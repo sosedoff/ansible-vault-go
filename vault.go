@@ -71,6 +71,7 @@ func Decrypt(input string, password string) (string, error) {
 	return result, nil
 }
 
+// DecryptFile decrypts the content of the file with the vault password
 func DecryptFile(path string, password string) (string, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
