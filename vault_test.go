@@ -10,6 +10,7 @@ func TestEncryptDecrypt(t *testing.T) {
 	result, err := Encrypt("test", "password")
 	assert.NoError(t, err)
 	assert.NotEmpty(t, result)
+	assert.Contains(t, result, "$ANSIBLE_VAULT;1.1;AES256\n")
 
 	result, err = Decrypt(result, "password")
 	assert.NoError(t, err)
