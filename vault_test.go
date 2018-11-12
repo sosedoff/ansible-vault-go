@@ -36,6 +36,10 @@ func TestDecrypt(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, err.Error(), "invalid secret format")
 
+	result, err = Decrypt("$ANSIBLE_VAULT;2.0;AES256\n636235663265383266346139", "password")
+	assert.Error(t, err)
+	assert.Equal(t, err.Error(), "invalid secret format")
+
 	result, err = Decrypt("$ANSIBLE_VAULT;1.1;AES256\n636235663265383266346139", "password")
 	assert.Error(t, err)
 	assert.Equal(t, err.Error(), "invalid secret")

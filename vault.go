@@ -8,6 +8,11 @@ import (
 	"strings"
 )
 
+var (
+	// ErrInvalidFormat is returned when secret content is not valid
+	ErrInvalidFormat = errors.New("invalid secret format")
+)
+
 // Encrypt encrypts the input string with the vault password
 func Encrypt(input string, password string) (string, error) {
 	salt, err := generateRandomBytes(saltLength)
@@ -43,12 +48,18 @@ func EncryptFile(path string, input string, password string) error {
 // Decrypt decrypts the input string with the vault password
 func Decrypt(input string, password string) (string, error) {
 	lines := strings.Split(input, "\n")
-	if len(lines) < 2 {
-		return "", errors.New("invalid secret format")
-	}
-	input = strings.Join(lines[1:], "\n")
 
-	decoded, err := hexDecode(input)
+	// Valid secret must include header and body
+	if len(lines) < 2 {
+		return "", ErrInvalidFormat
+	}
+
+	// Validate the vault file format
+	if strings.TrimSpace(lines[0]) != vaultHeader {
+		return "", ErrInvalidFormat
+	}
+
+	decoded, err := hexDecode(strings.Join(lines[1:], "\n"))
 	if err != nil {
 		return "", err
 	}

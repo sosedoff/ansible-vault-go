@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+const vaultHeader = "$ANSIBLE_VAULT;1.1;AES256"
+
 type secret struct {
 	salt []byte
 	hmac []byte
@@ -52,7 +54,7 @@ func encodeSecret(secret *secret, key *key) (string, error) {
 	}, "\n")
 
 	result := strings.Join([]string{
-		"$ANSIBLE_VAULT;1.1;AES256",
+		vaultHeader,
 		wrapText(hex.EncodeToString([]byte(combined))),
 	}, "\n")
 
