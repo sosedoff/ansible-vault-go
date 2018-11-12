@@ -2,6 +2,9 @@
 
 Go package to read/write Ansible Vault secrets
 
+[![GoDoc](https://godoc.org/github.com/sosedoff/ansible-vault-go?status.svg)](https://godoc.org/github.com/sosedoff/ansible-vault-go)
+[![Go Report Card](https://goreportcard.com/badge/github.com/sosedoff/ansible-vault-go)](https://goreportcard.com/report/github.com/sosedoff/ansible-vault-go)
+
 ## Installation
 
 ```
