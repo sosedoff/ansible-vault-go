@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
-	"errors"
 )
 
 func encrypt(data []byte, salt []byte, key *key) ([]byte, error) {
@@ -51,7 +50,7 @@ func unpad(src []byte) ([]byte, error) {
 	length := len(src)
 	padlen := int(src[length-1])
 	if padlen > length {
-		return nil, errors.New("invalid padding length")
+		return nil, ErrInvalidPadding
 	}
 	return src[:(length - padlen)], nil
 }

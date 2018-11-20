@@ -11,6 +11,9 @@ import (
 var (
 	// ErrInvalidFormat is returned when secret content is not valid
 	ErrInvalidFormat = errors.New("invalid secret format")
+
+	// ErrInvalidPadding is returned when invalid key is used
+	ErrInvalidPadding = errors.New("invalid padding")
 )
 
 // Encrypt encrypts the input string with the vault password
