@@ -1,30 +1,19 @@
 package vault
 
 import (
+	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
+	"errors"
 )
 
 func encrypt(data []byte, salt []byte, key *key) ([]byte, error) {
-	bs := aes.BlockSize
-	padding := (bs - len(data)%bs)
-	if padding == 0 {
-		padding = bs
-	}
-	padChar := rune(padding)
-	padArray := make([]byte, padding)
-	for i := range padArray {
-		padArray[i] = byte(padChar)
-	}
-
-	plaintext := []byte(data)
-	plaintext = append(plaintext, padArray...)
-
 	aesCipher, err := aes.NewCipher(key.cipherKey)
 	if err != nil {
 		return nil, err
 	}
 
+	plaintext := pad(data)
 	ciphertext := make([]byte, len(plaintext))
 
 	aesBlock := cipher.NewCTR(aesCipher, key.iv)
@@ -38,13 +27,31 @@ func decrypt(secret *secret, key *key) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	aesBlock := cipher.NewCTR(aesCipher, key.iv)
+
 	plainText := make([]byte, len(secret.data))
 
+	aesBlock := cipher.NewCTR(aesCipher, key.iv)
 	aesBlock.XORKeyStream(plainText, secret.data)
 
-	padding := int(plainText[len(plainText)-1])
-	result := string(plainText[:len(plainText)-padding])
+	result, err := unpad(plainText)
+	if err != nil {
+		return "", err
+	}
 
 	return string(result), nil
+}
+
+func pad(src []byte) []byte {
+	padlen := aes.BlockSize - len(src)%aes.BlockSize
+	padtext := bytes.Repeat([]byte{byte(padlen)}, padlen)
+	return append(src, padtext...)
+}
+
+func unpad(src []byte) ([]byte, error) {
+	length := len(src)
+	padlen := int(src[length-1])
+	if padlen > length {
+		return nil, errors.New("invalid padding length")
+	}
+	return src[:(length - padlen)], nil
 }
