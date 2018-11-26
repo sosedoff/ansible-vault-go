@@ -20,8 +20,8 @@ type key struct {
 	iv        []byte
 }
 
-func generateKey(password string, salt []byte) *key {
-	k := pbkdf2.Key([]byte(password), salt, operations, 2*keyLength+ivLength, sha256.New)
+func generateKey(password, salt []byte) *key {
+	k := pbkdf2.Key(password, salt, operations, 2*keyLength+ivLength, sha256.New)
 
 	return &key{
 		cipherKey: k[:keyLength],

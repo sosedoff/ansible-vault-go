@@ -22,7 +22,7 @@ func Encrypt(input string, password string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	key := generateKey(password, salt)
+	key := generateKey([]byte(password), salt)
 
 	// Encrypt the secret content
 	data, err := encrypt([]byte(input), salt, key)
@@ -72,7 +72,7 @@ func Decrypt(input string, password string) (string, error) {
 		return "", err
 	}
 
-	key := generateKey(password, secret.salt)
+	key := generateKey([]byte(password), secret.salt)
 	if err := checkDigest(secret, key); err != nil {
 		return "", err
 	}
