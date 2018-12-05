@@ -9,9 +9,6 @@ import (
 )
 
 var (
-	// ErrEmptyInput is returned when input plaintext is empty
-	ErrEmptyInput = errors.New("input is blank")
-
 	// ErrEmptyPassword is returned when password is empty
 	ErrEmptyPassword = errors.New("password is blank")
 
@@ -24,9 +21,6 @@ var (
 
 // Encrypt encrypts the input string with the vault password
 func Encrypt(input string, password string) (string, error) {
-	if input == "" {
-		return "", ErrEmptyInput
-	}
 	if password == "" {
 		return "", ErrEmptyPassword
 	}
@@ -63,9 +57,6 @@ func EncryptFile(path string, input string, password string) error {
 
 // Decrypt decrypts the input string with the vault password
 func Decrypt(input string, password string) (string, error) {
-	if input == "" {
-		return "", ErrEmptyInput
-	}
 	if password == "" {
 		return "", ErrEmptyPassword
 	}
