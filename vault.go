@@ -9,6 +9,12 @@ import (
 )
 
 var (
+	// ErrEmptyInput is returned when input plaintext is empty
+	ErrEmptyInput = errors.New("input is blank")
+
+	// ErrEmptyPassword is returned when password is empty
+	ErrEmptyPassword = errors.New("password is blank")
+
 	// ErrInvalidFormat is returned when secret content is not valid
 	ErrInvalidFormat = errors.New("invalid secret format")
 
@@ -18,6 +24,13 @@ var (
 
 // Encrypt encrypts the input string with the vault password
 func Encrypt(input string, password string) (string, error) {
+	if input == "" {
+		return "", ErrEmptyInput
+	}
+	if password == "" {
+		return "", ErrEmptyPassword
+	}
+
 	salt, err := generateRandomBytes(saltLength)
 	if err != nil {
 		return "", err
@@ -50,6 +63,13 @@ func EncryptFile(path string, input string, password string) error {
 
 // Decrypt decrypts the input string with the vault password
 func Decrypt(input string, password string) (string, error) {
+	if input == "" {
+		return "", ErrEmptyInput
+	}
+	if password == "" {
+		return "", ErrEmptyPassword
+	}
+
 	lines := strings.Split(input, "\n")
 
 	// Valid secret must include header and body
