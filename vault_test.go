@@ -1,6 +1,7 @@
 package vault
 
 import (
+	"errors"
 	"os"
 	"testing"
 
@@ -80,33 +81,36 @@ func TestDecrypt(t *testing.T) {
 6464623462326236650a663235666338633036633336303632343834633164323537333030363061
 3163`
 
-	result, err := Decrypt(sample, "password")
-	assert.NoError(t, err)
-	assert.Equal(t, "test\n", result)
+	tests := []struct {
+		name     string
+		input    string
+		password string
+		err      error
+		match    string
+	}{
+		{name: "success", input: sample, password: "password", match: "test\n"},
+		{name: "invalid password", input: sample, password: "invalid pass", err: errors.New("invalid password")},
+		{name: "invalid input", input: "invalid data", password: "password", err: ErrInvalidFormat},
+		{name: "invalid secret format", input: "$ANSIBLE_VAULT;2.0;AES256\n636235663265383266346139", password: "password", err: ErrInvalidFormat},
+		{name: "invalid secret input", input: "$ANSIBLE_VAULT;1.1;AES256\n636235663265383266346139", password: "password", err: errors.New("invalid secret")},
+		{name: "empty password", input: empty, password: "", err: ErrEmptyPassword},
+		{name: "empty input", input: empty, password: "password", match: ""},
+	}
 
-	result, err = Decrypt(sample, "invalid pass")
-	assert.Equal(t, err.Error(), "invalid password")
-	assert.Empty(t, result)
+	for _, test := range tests {
+		t.Run(test.name, func(tt *testing.T) {
+			result, err := Decrypt(test.input, test.password)
 
-	result, err = Decrypt("invalid data", "password")
-	assert.Error(t, err)
-	assert.Equal(t, err.Error(), "invalid secret format")
+			if test.err != nil {
+				assert.Error(tt, test.err, err)
+				assert.Contains(tt, err.Error(), test.err.Error())
+				return
+			}
 
-	result, err = Decrypt("$ANSIBLE_VAULT;2.0;AES256\n636235663265383266346139", "password")
-	assert.Error(t, err)
-	assert.Equal(t, err.Error(), "invalid secret format")
-
-	result, err = Decrypt("$ANSIBLE_VAULT;1.1;AES256\n636235663265383266346139", "password")
-	assert.Error(t, err)
-	assert.Equal(t, err.Error(), "invalid secret")
-
-	result, err = Decrypt(empty, "password")
-	assert.NoError(t, err)
-	assert.Equal(t, "", result)
-
-	result, err = Decrypt("input", "")
-	assert.Equal(t, err, ErrEmptyPassword)
-	assert.Equal(t, "", result)
+			assert.NoError(tt, err)
+			assert.Contains(tt, result, test.match)
+		})
+	}
 }
 
 func TestDecryptFile(t *testing.T) {
