@@ -3,7 +3,7 @@ module github.com/sosedoff/ansible-vault-go
 go 1.20
 
 require (
-	github.com/stretchr/testify v1.2.2
+	github.com/stretchr/testify v1.11.1
 	golang.org/x/crypto v0.8.0
 )
 
