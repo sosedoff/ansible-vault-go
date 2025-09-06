@@ -1,6 +1,7 @@
 package vault
 
 import (
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -18,6 +19,31 @@ func TestEncrypt(t *testing.T) {
 	result, err = Encrypt("test", "password")
 	assert.NoError(t, err)
 	assert.Contains(t, result, "$ANSIBLE_VAULT;1.1;AES256")
+}
+
+func TestEncryptFile(t *testing.T) {
+	t.Run("file does not exist", func(t *testing.T) {
+		err := EncryptFile("/path/to/file", "input", "password")
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "no such file or directory")
+	})
+
+	t.Run("empty password", func(t *testing.T) {
+		err := EncryptFile("/path/to/file", "input", "")
+		assert.Equal(t, ErrEmptyPassword, err)
+	})
+
+	t.Run("path exists", func(t *testing.T) {
+		outPath := "/tmp/output"
+
+		err := EncryptFile(outPath, "input", "password")
+		assert.NoError(t, err)
+		assert.FileExists(t, outPath)
+
+		content, err := os.ReadFile(outPath)
+		assert.NoError(t, err)
+		assert.Contains(t, string(content), "$ANSIBLE_VAULT;1.1;AES256")
+	})
 }
 
 func TestDecrypt(t *testing.T) {
