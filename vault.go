@@ -4,7 +4,7 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"errors"
-	"io/ioutil"
+	"os"
 	"strings"
 )
 
@@ -52,7 +52,7 @@ func EncryptFile(path string, input string, password string) error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(path, []byte(result), 0666)
+	return os.WriteFile(path, []byte(result), 0666)
 }
 
 // Decrypt decrypts the input string with the vault password
@@ -98,7 +98,7 @@ func Decrypt(input string, password string) (string, error) {
 
 // DecryptFile decrypts the content of the file with the vault password
 func DecryptFile(path string, password string) (string, error) {
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return "", err
 	}
