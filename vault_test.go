@@ -1,6 +1,7 @@
 package vault
 
 import (
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -18,6 +19,35 @@ func TestEncrypt(t *testing.T) {
 	result, err = Encrypt("test", "password")
 	assert.NoError(t, err)
 	assert.Contains(t, result, "$ANSIBLE_VAULT;1.1;AES256")
+}
+
+func TestEncryptFile(t *testing.T) {
+	t.Run("file does not exist", func(t *testing.T) {
+		err := EncryptFile("/path/to/file", "input", "password")
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "no such file or directory")
+	})
+
+	t.Run("empty password", func(t *testing.T) {
+		err := EncryptFile("/path/to/file", "input", "")
+		assert.Equal(t, ErrEmptyPassword, err)
+	})
+
+	t.Run("path exists", func(t *testing.T) {
+		outPath := "/tmp/encrypt"
+
+		t.Cleanup(func() {
+			os.Remove(outPath)
+		})
+
+		err := EncryptFile(outPath, "input", "password")
+		assert.NoError(t, err)
+		assert.FileExists(t, outPath)
+
+		content, err := os.ReadFile(outPath)
+		assert.NoError(t, err)
+		assert.Contains(t, string(content), "$ANSIBLE_VAULT;1.1;AES256")
+	})
 }
 
 func TestDecrypt(t *testing.T) {
@@ -62,6 +92,32 @@ func TestDecrypt(t *testing.T) {
 	result, err = Decrypt("input", "")
 	assert.Equal(t, err, ErrEmptyPassword)
 	assert.Equal(t, "", result)
+}
+
+func TestDecryptFile(t *testing.T) {
+	t.Run("invalid path", func(t *testing.T) {
+		content, err := DecryptFile("/tmp/foo", "password")
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "no such file or directory")
+		assert.Equal(t, "", content)
+	})
+
+	t.Run("file exists", func(t *testing.T) {
+		inPath := "/tmp/decrypt"
+		raw := `$ANSIBLE_VAULT;1.1;AES256
+66636665376466363035323339653038313631366530366139353930363639396263336538656638
+3232656465323265663737633039363037323039393039620a303065353563633261633964623139
+32363666633230313364356230623830383134383432633932333630626462316434333137373131
+6362373633313532650a313362613134656433663238333163323865666237366161366164383266
+3936`
+
+		err := os.WriteFile(inPath, []byte(raw), 0666)
+		assert.NoError(t, err)
+
+		content, err := DecryptFile(inPath, "password")
+		assert.Nil(t, err)
+		assert.Equal(t, "test\n", content)
+	})
 }
 
 func TestEncryptDecrypt(t *testing.T) {
