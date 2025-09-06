@@ -8,17 +8,32 @@ import (
 )
 
 func TestEncrypt(t *testing.T) {
-	result, err := Encrypt("test", "")
-	assert.Equal(t, ErrEmptyPassword, err)
-	assert.Equal(t, "", result)
+	tests := []struct {
+		name     string
+		input    string
+		password string
+		err      error
+		match    string
+	}{
+		{name: "empty password", password: "", err: ErrEmptyPassword},
+		{name: "empty input", password: "password", match: "$ANSIBLE_VAULT;1.1;AES256"},
+		{name: "success", input: "test", password: "password", match: "$ANSIBLE_VAULT;1.1;AES256"},
+	}
 
-	result, err = Encrypt("", "password")
-	assert.NoError(t, err)
-	assert.Contains(t, result, "$ANSIBLE_VAULT;1.1;AES256")
+	for _, test := range tests {
+		t.Run(test.name, func(tt *testing.T) {
+			result, err := Encrypt(test.input, test.password)
 
-	result, err = Encrypt("test", "password")
-	assert.NoError(t, err)
-	assert.Contains(t, result, "$ANSIBLE_VAULT;1.1;AES256")
+			if test.err != nil {
+				assert.Error(tt, test.err, err)
+				assert.Contains(tt, err.Error(), test.err.Error())
+				return
+			}
+
+			assert.NoError(tt, err)
+			assert.Contains(tt, result, test.match)
+		})
+	}
 }
 
 func TestEncryptFile(t *testing.T) {
