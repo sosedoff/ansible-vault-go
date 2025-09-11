@@ -12,6 +12,9 @@ var (
 	// ErrEmptyPassword is returned when password is empty
 	ErrEmptyPassword = errors.New("password is blank")
 
+	//ErrInvalidSecret is returned when secret data is not formatted as Ansible secret
+	ErrInvalidSecret = errors.New("invalid secret")
+
 	// ErrInvalidFormat is returned when secret content is not valid
 	ErrInvalidFormat = errors.New("invalid secret format")
 

@@ -92,7 +92,7 @@ func TestDecrypt(t *testing.T) {
 		{name: "invalid password", input: sample, password: "invalid pass", err: errors.New("invalid password")},
 		{name: "invalid input", input: "invalid data", password: "password", err: ErrInvalidFormat},
 		{name: "invalid secret format", input: "$ANSIBLE_VAULT;2.0;AES256\n636235663265383266346139", password: "password", err: ErrInvalidFormat},
-		{name: "invalid secret input", input: "$ANSIBLE_VAULT;1.1;AES256\n636235663265383266346139", password: "password", err: errors.New("invalid secret")},
+		{name: "invalid secret input", input: "$ANSIBLE_VAULT;1.1;AES256\n636235663265383266346139", password: "password", err: ErrInvalidSecret},
 		{name: "empty password", input: empty, password: "", err: ErrEmptyPassword},
 		{name: "empty input", input: empty, password: "password", match: ""},
 	}

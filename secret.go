@@ -19,7 +19,7 @@ type secret struct {
 func decodeSecret(input string) (*secret, error) {
 	lines := strings.SplitN(input, "\n", 3)
 	if len(lines) != 3 {
-		return nil, errors.New("invalid secret")
+		return nil, ErrInvalidSecret
 	}
 
 	salt, err := hex.DecodeString(lines[0])
