@@ -5,8 +5,9 @@ import (
 )
 
 const (
-	headerFormat = "$ANSIBLE_VAULT" // Magic header ID
-	headerParts  = 3                // Required number of parts in the header
+	headerFormat    = "$ANSIBLE_VAULT" // Magic header ID
+	headerParts     = 3                // Required number of parts in the header
+	headerSeparator = ";"              // Separator used in the header
 )
 
 var (
@@ -49,7 +50,7 @@ func (h header) String() string {
 		parts = append(parts, h.label)
 	}
 
-	return strings.Join(parts, ";")
+	return strings.Join(parts, headerSeparator)
 }
 
 // Validate checks if all header values are correct
@@ -68,7 +69,7 @@ func (h header) Validate() error {
 // parseHeader returns an ansible vault header details or an error if it's invalid
 func parseHeader(input string) (header, error) {
 	head := header{}
-	parts := strings.SplitN(strings.TrimSpace(input), ";", 4)
+	parts := strings.SplitN(strings.TrimSpace(input), headerSeparator, 4)
 
 	// Ensure the vault header format conforms to "$FORMAT;VERSION;CIPHER"
 	if len(parts) < headerParts {
