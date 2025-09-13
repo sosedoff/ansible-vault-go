@@ -29,4 +29,4 @@ jobs:
       - name: Setup
         run: make setup
       - name: Test
-        run: make test-ci
+        run: make test
