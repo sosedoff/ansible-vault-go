@@ -81,6 +81,13 @@ func TestDecrypt(t *testing.T) {
 6464623462326236650a663235666338633036633336303632343834633164323537333030363061
 3163`
 
+	withLabel := `$ANSIBLE_VAULT;1.2;AES256;label
+35633765393062323638373039656130623264373762396530396566643534643365306363373638
+3762303835636430373062303365323238653562303164610a623031643664613431653763383130
+35373830386463303833383435346431613635343663383638393232363137303931656634386133
+3839613335366336640a653739336236653534393031616132363330643066393466356665323461
+6333`
+
 	tests := []struct {
 		name     string
 		input    string
@@ -95,6 +102,7 @@ func TestDecrypt(t *testing.T) {
 		{name: "invalid secret input", input: "$ANSIBLE_VAULT;1.1;AES256\n636235663265383266346139", password: "password", err: ErrInvalidSecret},
 		{name: "empty password", input: empty, password: "", err: ErrEmptyPassword},
 		{name: "empty input", input: empty, password: "password", match: ""},
+		{name: "with label", input: withLabel, password: "password", match: "Hello World!"},
 	}
 
 	for _, test := range tests {
