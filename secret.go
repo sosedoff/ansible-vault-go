@@ -8,10 +8,6 @@ import (
 	"strings"
 )
 
-const (
-	vaultHeader = "$ANSIBLE_VAULT;1.1;AES256"
-)
-
 type secret struct {
 	salt []byte
 	hmac []byte
