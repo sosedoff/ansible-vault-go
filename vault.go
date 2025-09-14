@@ -72,8 +72,8 @@ func Decrypt(input string, password string) (string, error) {
 	}
 
 	// Validate the vault file format
-	if strings.TrimSpace(lines[0]) != vaultHeader {
-		return "", ErrInvalidFormat
+	if _, err := parseHeader(lines[0]); err != nil {
+		return "", err
 	}
 
 	decoded, err := hexDecode(strings.Join(lines[1:], "\n"))

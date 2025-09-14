@@ -44,12 +44,6 @@ func Test_parseHeader(t *testing.T) {
 			err:      ErrInvalidFormat,
 		},
 		{
-			name:     "unsupported version 2",
-			input:    "$ANSIBLE_VAULT;1.2;AES256",
-			expected: nil,
-			err:      ErrInvalidFormat,
-		},
-		{
 			name:     "unsupported cipher",
 			input:    "$ANSIBLE_VAULT;1.1;AES",
 			expected: nil,
@@ -65,6 +59,12 @@ func Test_parseHeader(t *testing.T) {
 			name:     "with label",
 			input:    "$ANSIBLE_VAULT;1.1;AES256;label\n",
 			expected: &header{version: "1.1", cipher: "AES256", label: "label"},
+			err:      nil,
+		},
+		{
+			name:     "with label in 1.2 format",
+			input:    "$ANSIBLE_VAULT;1.2;AES256;label\n",
+			expected: &header{version: "1.2", cipher: "AES256", label: "label"},
 			err:      nil,
 		},
 	}
