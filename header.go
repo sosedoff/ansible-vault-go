@@ -67,26 +67,33 @@ func (h header) Validate() error {
 }
 
 // parseHeader returns an ansible vault header details or an error if it's invalid
-func parseHeader(input string) (header, error) {
-	head := header{}
+func parseHeader(input string) (*header, error) {
 	parts := strings.SplitN(strings.TrimSpace(input), headerSeparator, 4)
 
 	// Ensure the vault header format conforms to "$FORMAT;VERSION;CIPHER"
 	if len(parts) < headerParts {
-		return head, ErrInvalidFormat
+		return nil, ErrInvalidFormat
 	}
 
 	if parts[0] != headerFormat {
-		return head, ErrInvalidFormat
+		return nil, ErrInvalidFormat
 	}
 
-	head.version = parts[0]
-	head.cipher = parts[1]
+	parts = parts[1:]
 
-	if len(parts) > 3 {
-		head.cipher = parts[3]
+	head := header{
+		version: parts[0],
+		cipher:  parts[1],
+	}
+
+	if len(parts) >= 3 {
+		head.label = parts[2]
 	}
 
 	err := head.Validate()
-	return head, err
+	if err != nil {
+		return nil, err
+	}
+
+	return &head, nil
 }
